@@ -17,7 +17,7 @@ const Cart = () => {
       {cartItems}
       <div className={classes.total}>
         <span>Total Amount</span>
-        <span>32.68</span>
+        <span>{cartCtx.totalAmount}</span>
       </div>
       <div className={classes.actions}>
         <button className={classes['button--alt']} onClick={cartCtx.hideCart}>Close</button>
