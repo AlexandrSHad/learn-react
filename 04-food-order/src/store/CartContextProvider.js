@@ -9,7 +9,7 @@ const cartDataDefaultState = {
 };
 
 const cartDataActionTypes = {
-  ADD_CART_ITEM: 'ADD_CART_ITEM',
+  UPSERT_CART_ITEM: 'UPSERT_CART_ITEM',
   REMOVE_CART_ITEM: 'REMOVE_CART_ITEM'
 };
 
@@ -17,8 +17,22 @@ const cartDataRaducer = (state, action) => {
   const calcTotalAmount = (items) => items.reduce((total, item) => total + item.amount * item.price, 0);
   const calcTotalItemsNumber = (items) => items.reduce((total, item) => total + item.amount, 0);
 
-  if (action.type === cartDataActionTypes.ADD_CART_ITEM) {
-    const updatedItems = [...state.items, action.item];
+  if (action.type === cartDataActionTypes.UPSERT_CART_ITEM) {
+    let updatedItems;
+
+    const existingItemIndex = state.items.findIndex(item => item.id === action.item.id);
+    const existingItem = state.items[existingItemIndex];
+
+    if (existingItem) {
+      const updatedItem = {
+        ...existingItem,
+        amount: existingItem.amount + action.item.amount
+      }
+      updatedItems = [...state.items];
+      updatedItems[existingItemIndex] = updatedItem;
+    } else {
+      updatedItems = [...state.items, action.item];
+    }
     
     return {
       items: updatedItems,
@@ -26,8 +40,23 @@ const cartDataRaducer = (state, action) => {
       totalItemsNumber: calcTotalItemsNumber(updatedItems)
     };
   }
+
   if (action.type === cartDataActionTypes.REMOVE_CART_ITEM) {
-    const updatedItems = state.items.filter(item => item.id !== action.id);
+    let updatedItems;
+
+    const existingItemIndex = state.items.findIndex(item => item.id === action.id);
+    const existingItem = state.items[existingItemIndex];
+
+    if (existingItem.amount === 1) {
+      updatedItems = state.items.filter(item => item.id !== action.id);
+    } else {
+      const updatedItem = {
+        ...existingItem,
+        amount: existingItem.amount - 1
+      }
+      updatedItems = [...state.items];
+      updatedItems[existingItemIndex] = updatedItem;
+    }
 
     return {
       items: updatedItems,
@@ -50,7 +79,7 @@ const CartContextProvider = props => {
     items: cartDataState.items,
     totalAmount: cartDataState.totalAmount,
     totalItemsNumber: cartDataState.totalItemsNumber,
-    addItem: (item) => { dispatchCartDataAction({ type: cartDataActionTypes.ADD_CART_ITEM, item }) },
+    addItem: (item) => { dispatchCartDataAction({ type: cartDataActionTypes.UPSERT_CART_ITEM, item }) },
     removeItem: (id) => { dispatchCartDataAction({ type: cartDataActionTypes.REMOVE_CART_ITEM, id }) }
   };
 

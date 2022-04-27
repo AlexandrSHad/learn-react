@@ -1,3 +1,8 @@
+.placeholder {
+  text-align: center;
+  padding: 50px;
+}
+
 .cart-items {
   list-style: none;
   margin: 0;
