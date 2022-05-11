@@ -6,12 +6,17 @@ import TaskForm from './TaskForm';
 const NewTask = (props) => {
   const [ postTask, isLoading, error ] = useHttpRequest(urls.tasks, 'POST');
 
-  const enterTaskHandler = async (taskText) => {
-    var response = await postTask( JSON.stringify({ text: taskText }) );
-
-    const generatedId = response.name; // firebase-specific => "name" contains generated id
-    const createdTask = { id: generatedId, text: taskText };
-    props.onAddTask(createdTask);
+  const enterTaskHandler = (taskText) => {
+    postTask({
+      url: urls.tasks,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: { text: taskText },
+     }, (response) => {
+      const generatedId = response.name; // firebase-specific => "name" contains generated id
+      const createdTask = { id: generatedId, text: taskText };
+      props.onAddTask(createdTask);
+     });
   };
 
   return (

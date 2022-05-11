@@ -1,21 +1,19 @@
 import { useCallback, useState } from 'react';
 
-const useHttpRequest = (url, httpMethod, mappingFn = null) => {
+const useHttpRequest = requestConfig => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const send = useCallback(async (body) => {
+  const send = useCallback(async (requestConfig, callback) => {
     setIsLoading(true);
     setError(null);
 
     try {
-      const requestOptions = {
-        method: httpMethod || 'GET',
-        body: body ? body : undefined,
-        headers: body ? { 'Content-Type': 'application/json' } : undefined,
-      };
-
-      const response = await fetch(url, requestOptions);
+      const response = await fetch(requestConfig.url, {
+        method: requestConfig.method || 'GET',
+        body: requestConfig.body ? JSON.stringify(requestConfig.body) : null,
+        headers: requestConfig.headers || {},
+      });
 
       if (!response.ok) {
         throw new Error('Request failed!');
@@ -23,18 +21,13 @@ const useHttpRequest = (url, httpMethod, mappingFn = null) => {
 
       const data = await response.json();
 
-      const mappedData = mappingFn
-        ? mappingFn(data)
-        : data;
-      
-      return mappedData;
+      callback && callback(data);
     } catch (err) {
       setError(err.message || 'Something went wrong!');
-      return null;
     } finally {
       setIsLoading(false);
     }
-  }, [url, httpMethod, mappingFn]);
+  }, []);
 
   return [ send, isLoading, error ];
 };
