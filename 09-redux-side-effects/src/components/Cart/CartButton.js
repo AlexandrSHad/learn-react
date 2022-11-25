@@ -5,7 +5,8 @@ import { cartActions } from '../../store/cart';
 
 const CartButton = (props) => {
   const dispatch = useDispatch();
-  const itemCount = useSelector(state => state.cart.items.length);
+  const itemCount = useSelector(state =>
+    state.cart.items.reduce((acc, item) => acc = acc + item.quantity, 0));
 
   const clickHandler = () => {
     dispatch(cartActions.toggleCart());
