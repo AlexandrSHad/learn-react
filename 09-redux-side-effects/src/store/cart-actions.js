@@ -1,23 +1,11 @@
+import { fetchCartData, updateCartData } from '../repositories/cartRepository';
 import { cartActions } from './cart';
 import { uiActions } from './ui';
 
-export const fetchCartData = () => {
+export const fetchCartDataApiCall = () => {
   return async (dispatch) => {
-    const fetchData = async () => {
-      const response = await fetch(
-        'https://http-hook-7dba9-default-rtdb.europe-west1.firebasedatabase.app/cart.json');
-
-      if (!response.ok) {
-        throw Error('Fetching cart data failed!');
-      }
-
-      const data = await response.json();
-
-      return data;
-    };
-
     try {
-      const cartData = await fetchData();
+      const cartData = await fetchCartData();
 
       if (cartData) {
         dispatch(cartActions.replaceCartData(cartData));
@@ -32,7 +20,7 @@ export const fetchCartData = () => {
   };
 };
 
-export const storeCartData = (cartData) => {
+export const storeCartDataApiCall = (cartData) => {
   return async (dispatch) => {
     dispatch(uiActions.showNotification({
       status: 'pending',
@@ -40,21 +28,8 @@ export const storeCartData = (cartData) => {
       message: 'Sending cart data'
     }));
 
-    const sendRequest = async () => {
-      const response = await fetch(
-        'https://http-hook-7dba9-default-rtdb.europe-west1.firebasedatabase.app/cart.json',
-        {
-          method: 'PUT',
-          body: JSON.stringify(cartData)
-        });
-
-      if (!response.ok) {
-        throw Error('Sending cart data failed!');
-      }
-    }
-
     try {
-      await sendRequest();
+      await updateCartData(cartData);
 
       dispatch(uiActions.showNotification({
         status: 'success',

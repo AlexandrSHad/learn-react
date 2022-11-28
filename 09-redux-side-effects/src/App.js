@@ -5,8 +5,8 @@ import Cart from './components/Cart/Cart';
 import Layout from './components/Layout/Layout';
 import Products from './components/Shop/Products';
 import Notification from './components/UI/Notification';
-import { fetchCartData, storeCartData } from './store/cart-actions';
-import { fetchProducts } from './store/products-actions';
+import { fetchCartDataApiCall, storeCartDataApiCall } from './store/cart-actions';
+import { fetchProductsApiCall } from './store/products-actions';
 
 let isInitialization = true;
 
@@ -16,8 +16,8 @@ function App() {
   const notification = useSelector(state => state.ui.notification);
 
   useEffect(() => {
-    dispatch(fetchProducts());
-    dispatch(fetchCartData());
+    dispatch(fetchProductsApiCall());
+    dispatch(fetchCartDataApiCall());
   }, [dispatch]);
 
   useEffect(() => {
@@ -27,7 +27,7 @@ function App() {
     }
 
     if (cartData.changed) {
-      dispatch(storeCartData({ items: cartData.items }));
+      dispatch(storeCartDataApiCall({ items: cartData.items }));
     }
   }, [cartData, dispatch]);
 

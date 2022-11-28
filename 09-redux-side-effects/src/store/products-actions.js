@@ -1,24 +1,11 @@
+import { fetchProducts } from '../repositories/productsRepository';
 import { productsActions } from './products';
 import { uiActions } from './ui';
 
-export const fetchProducts = () => {
+export const fetchProductsApiCall = () => {
   return async (dispatch) => {
-    const fetchData = async () => {
-      const response = await fetch(
-        'https://http-hook-7dba9-default-rtdb.europe-west1.firebasedatabase.app/products.json');
-  
-      if (!response.ok) {
-        throw Error('Products fetching failed.');
-      }
-
-      const data = await response.json();
-
-      return data;
-    };
-
     try {
-      const products = await fetchData();
-      console.log(products);
+      const products = await fetchProducts();
 
       dispatch(productsActions.setProducts(products || []));
     } catch (error) {
