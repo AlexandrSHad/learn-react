@@ -6,6 +6,7 @@ import Layout from './components/Layout/Layout';
 import Products from './components/Shop/Products';
 import Notification from './components/UI/Notification';
 import { fetchCartData, storeCartData } from './store/cart-actions';
+import { fetchProducts } from './store/products-actions';
 
 let isInitialization = true;
 
@@ -15,6 +16,7 @@ function App() {
   const notification = useSelector(state => state.ui.notification);
 
   useEffect(() => {
+    dispatch(fetchProducts());
     dispatch(fetchCartData());
   }, [dispatch]);
 
