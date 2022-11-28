@@ -5,15 +5,18 @@ import Cart from './components/Cart/Cart';
 import Layout from './components/Layout/Layout';
 import Products from './components/Shop/Products';
 import Notification from './components/UI/Notification';
-import { storeCartData } from './store/cart';
+import { fetchCartData, storeCartData } from './store/cart-actions';
 
 let isInitialization = true;
 
 function App() {
   const dispatch = useDispatch();
-  const showCart = useSelector(state => state.cart.showCart);
-  const cartItems = useSelector(state => state.cart.items);
+  const cartData = useSelector(state => state.cart);
   const notification = useSelector(state => state.ui.notification);
+
+  useEffect(() => {
+    dispatch(fetchCartData());
+  }, [dispatch]);
 
   useEffect(() => {
     if (isInitialization) {
@@ -21,8 +24,10 @@ function App() {
       return;
     }
 
-    dispatch(storeCartData({ items: cartItems }));
-  }, [cartItems, dispatch]);
+    if (cartData.changed) {
+      dispatch(storeCartData({ items: cartData.items }));
+    }
+  }, [cartData, dispatch]);
 
   return (
     <>
@@ -31,7 +36,7 @@ function App() {
         title={notification.title}
         message={notification.message} />}
       <Layout>
-        {showCart && <Cart />}
+        {cartData.showCart && <Cart />}
         <Products />
       </Layout>
     </>
